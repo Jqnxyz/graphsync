@@ -1,0 +1,12 @@
+name: 'GraphSync'
+description: 'Reads a contribution graph of an authenticated user, and copies the contributions to this repository'
+inputs:
+  source-graph-username: # username of the source graph 
+    description: 'Username of the source graph'
+    required: true
+outputs:
+  message:
+    description: 'Output message, either success or failure'
+runs:
+  using: 'node20'
+  main: 'index.js'
