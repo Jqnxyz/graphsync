@@ -9,4 +9,4 @@ outputs:
     description: 'Output message, either success or failure'
 runs:
   using: 'node20'
-  main: 'index.js'
+  main: 'dist/index.js'
