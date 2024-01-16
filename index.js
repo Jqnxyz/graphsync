@@ -270,7 +270,7 @@ try {
 
 
     function commit(date, contributionsForTheDay) {
-        let dateFormatted = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " 00:00:01 " + offsetHHMM
+        let dateFormatted = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:01 " + offsetHHMM
         let commitMessage = "Contribution sync from " + sourceUsername
         let options = {
             env: {
