@@ -32300,8 +32300,8 @@ try {
         }
     }
     function setGitConfig() {
-        exec.exec("git", ["config", "--global", "user.email", authorEmail])
-        exec.exec("git", ["config", "--global", "user.name", authorName])
+        exec.exec("git", ["config", "user.email", authorEmail])
+        exec.exec("git", ["config", "user.name", authorName])
     }
 
 
