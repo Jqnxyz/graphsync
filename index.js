@@ -261,6 +261,13 @@ try {
         }
     }
 
+    let sleepSetTimeout_ctrl;
+
+    function sleep(ms) {
+        clearInterval(sleepSetTimeout_ctrl);
+        return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
+    }
+
 
     function commit(date, contributionsForTheDay) {
         let dateFormatted = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " 00:00:01 " + offsetHHMM
@@ -276,6 +283,8 @@ try {
 
         for (let i = 0; i < contributionsForTheDay; i++) {
             exec.exec("git", ["-c", "user.name=" + authorName, "-c", "user.email=" + authorEmail, "commit", "-m", commitMessage, "--allow-empty"], options)
+            // Sleep for like 50ms to not break things?
+            sleep(50)
         }
     }
 } catch (error) {
