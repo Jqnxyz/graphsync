@@ -309,6 +309,8 @@ try {
             // Sleep for like 0.5s to not break things?
             sleep(500)
         }
+        // Sleep for another 0.5s
+        sleep(500)
     }
 } catch (error) {
     core.setFailed(error.message);
