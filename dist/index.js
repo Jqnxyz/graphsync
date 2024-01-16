@@ -32048,9 +32048,10 @@ try {
     const sourceUsername = core.getInput('source-graph-username');
     const sourceToken = core.getInput('source-graph-token');
     // const offsetHHMM = "+0800"
-    // const authorString = "Zen Quah <me@zenquah.dev>"
     const offsetHHMM = core.getInput('offset-hhmm');
-    const authorString = core.getInput('git-author-string');
+    const authorEmail = core.getInput('git-author-email');
+    const authorName = core.getInput('git-author-name');
+    const authorString = authorName + " <" + authorEmail + ">"
 
     console.log(`Fetching graph from ${sourceUsername}`);
 
@@ -32287,6 +32288,7 @@ try {
 
     function commitFromTrackerObject(trackerObject) {
         /* For each day in trackerObject, call commit() with the date and number of contributions from sourceUsername */
+        setGitConfig()
         for (let year in trackerObject) {
             for (let month in trackerObject[year]) {
                 for (let day in trackerObject[year][month]) {
@@ -32296,6 +32298,10 @@ try {
                 }
             }
         }
+    }
+    function setGitConfig() {
+        exec.exec("git", ["config", "--global", "user.email", authorEmail])
+        exec.exec("git", ["config", "--global", "user.name", authorName])
     }
 
 
@@ -32310,7 +32316,7 @@ try {
         }
 
         for (let i = 0; i < contributionsForTheDay; i++) {
-            exec.exec("git", ["commit", "-m", commitMessage, "--allow-empty", "--author", authorString], options)
+            exec.exec("git", ["commit", "-m='" + commitMessage + "'", "--allow-empty", "--author='" + authorString + "'"], options)
         }
     }
 } catch (error) {
