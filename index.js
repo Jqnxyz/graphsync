@@ -153,30 +153,27 @@ try {
      }
      */
     let trackerFormattedFromAPI = {}
-    let splitDate = []
-    let day, month, year = ""
-    let currentDate
     contributionHistoryWeeks.forEach(week => {
         week["contributionDays"].forEach(day => {
-            splitDate = day["date"].split("-")
-            year = splitDate[0]
-            month = splitDate[1]
-            day = splitDate[2]
-            currentDate = new Date(year, month, day)
+            let splitDate = day["date"].split("-")
+            let splitYear = splitDate[0]
+            let splitMonth = splitDate[1]
+            let splitDay = splitDate[2]
+            let currentDate = new Date(splitYear, splitMonth, splitDay)
             if (currentDate < mostRecentDate) {
                 // Skip days that are older than the most recent day in the tracker
                 return
             }
-            if (!trackerFormattedFromAPI[year]) {
-                trackerFormattedFromAPI[year] = {}
+            if (!trackerFormattedFromAPI[splitYear]) {
+                trackerFormattedFromAPI[splitYear] = {}
             }
-            if (!trackerFormattedFromAPI[year][month]) {
-                trackerFormattedFromAPI[year][month] = {}
+            if (!trackerFormattedFromAPI[splitYear][splitMonth]) {
+                trackerFormattedFromAPI[splitYear][splitMonth] = {}
             }
-            if (!trackerFormattedFromAPI[year][month][day]) {
-                trackerFormattedFromAPI[year][month][day] = {}
+            if (!trackerFormattedFromAPI[splitYear][splitMonth][splitDay]) {
+                trackerFormattedFromAPI[splitYear][splitMonth][splitDay] = {}
             }
-            trackerFormattedFromAPI[year][month][dayOfMonth][sourceUsername] = day["contributionCount"]
+            trackerFormattedFromAPI[splitYear][splitMonth][splitDay][sourceUsername] = day["contributionCount"]
         })
     })
 
