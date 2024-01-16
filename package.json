@@ -1,6 +1,6 @@
 {
   "name": "graphsync",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "sync contribution graph from your work github account to your personal github account",
   "main": "index.js",
   "scripts": {
