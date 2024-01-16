@@ -1,12 +1,21 @@
 name: 'GraphSync'
 description: 'Reads a contribution graph of an authenticated user, and copies the contributions to this repository'
 inputs:
-  source-graph-username: # username of the source graph 
+  source-graph-username:
     description: 'Username of the source graph'
     required: true
-outputs:
-  message:
-    description: 'Output message, either success or failure'
+  source-graph-token:
+    description: 'GitHub PAT for the source user'
+    required: true
+  offset-hhmm:
+    description: 'Timezone offset in +/-HHMM format'
+    required: true
+  git-author-name:
+    description: 'Name of the git author (for commits)'
+    required: true
+  git-author-email:
+    description: 'Email of the git author (for commits)'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
