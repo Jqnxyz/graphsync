@@ -272,28 +272,21 @@ try {
         for (let year in trackerObject) {
             for (let month in trackerObject[year]) {
                 for (let day in trackerObject[year][month]) {
-                    let date = new Date(year, month, day)
+                    let dateString = year + "-" + month + "-" + day
                     let contributionsForTheDay = trackerObject[year][month][day][sourceUsername]
                     if (contributionsForTheDay == 0) {
                         continue
                     }
                     console.log("Committing " + contributionsForTheDay + " contributions for " + year + "-" + month + "-" + day)
-                    await commit(date, contributionsForTheDay)
+                    await commit(dateString, contributionsForTheDay)
                 }
             }
         }
     }
 
-    let sleepSetTimeout_ctrl;
 
-    function sleep(ms) {
-        clearInterval(sleepSetTimeout_ctrl);
-        return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
-    }
-
-
-    async function commit(date, contributionsForTheDay) {
-        let dateFormatted = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:01 " + offsetHHMM
+    async function commit(dateString, contributionsForTheDay) {
+        let dateFormatted = dateString + " 00:00:01 " + offsetHHMM
         let commitMessage = "Contribution sync from " + sourceUsername
         let options = {
             env: {
