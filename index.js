@@ -249,20 +249,16 @@ try {
 
     function commitFromTrackerObject(trackerObject) {
         /* For each day in trackerObject, call commit() with the date and number of contributions from sourceUsername */
-        setGitConfig()
         for (let year in trackerObject) {
             for (let month in trackerObject[year]) {
                 for (let day in trackerObject[year][month]) {
                     let date = new Date(year, month, day)
                     let contributionsForTheDay = trackerObject[year][month][day][sourceUsername]
+                    console.log("Committing " + contributionsForTheDay + " contributions for " + year + "-" + month + "-" + day)
                     commit(date, contributionsForTheDay)
                 }
             }
         }
-    }
-    function setGitConfig() {
-        exec.exec("git", ["config", "user.email", authorEmail])
-        exec.exec("git", ["config", "user.name", authorName])
     }
 
 
@@ -272,7 +268,9 @@ try {
         let options = {
             env: {
                 GIT_AUTHOR_DATE: dateFormatted,
-                GIT_COMMITTER_DATE: dateFormatted
+                GIT_COMMITTER_DATE: dateFormatted,
+                GIT_AUTHOR_NAME: authorName,
+                GIT_AUTHOR_EMAIL: authorEmail,
             }
         }
 
