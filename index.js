@@ -247,13 +247,36 @@ try {
         })
 
 
+    // Sort tracker object by date, ascending year, month, day first:
+    function sortTrackerObject(trackerObject) {
+        const sortedTrackerObject = {};
+        const years = Object.keys(trackerObject).sort();
+        for (const year of years) {
+            const months = Object.keys(trackerObject[year]).sort();
+            sortedTrackerObject[year] = {};
+            for (const month of months) {
+                const days = Object.keys(trackerObject[year][month]).sort();
+                sortedTrackerObject[year][month] = {};
+                for (const day of days) {
+                    sortedTrackerObject[year][month][day] = trackerObject[year][month][day];
+                }
+            }
+        }
+        return sortedTrackerObject;
+    }
+
     function commitFromTrackerObject(trackerObject) {
+        trackerObject = sortTrackerObject(trackerObject);
+
         /* For each day in trackerObject, call commit() with the date and number of contributions from sourceUsername */
         for (let year in trackerObject) {
             for (let month in trackerObject[year]) {
                 for (let day in trackerObject[year][month]) {
                     let date = new Date(year, month, day)
                     let contributionsForTheDay = trackerObject[year][month][day][sourceUsername]
+                    if (contributionsForTheDay == 0) {
+                        continue
+                    }
                     console.log("Committing " + contributionsForTheDay + " contributions for " + year + "-" + month + "-" + day)
                     commit(date, contributionsForTheDay)
                 }
