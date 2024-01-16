@@ -91,13 +91,16 @@ try {
         console.log("No tracker.json found, starting from scratch");
     }
 
-    // Select the most recent [year][month][day] from the tracker
-    // Also select its data
-    let mostRecentYear = Object.keys(tracker).sort().reverse()[0]
-    let mostRecentMonth = Object.keys(tracker[mostRecentYear]).sort().reverse()[0]
-    let mostRecentDay = Object.keys(tracker[mostRecentYear][mostRecentMonth]).sort().reverse()[0]
-    let mostRecentData = tracker[mostRecentYear][mostRecentMonth][mostRecentDay]
-    let mostRecentDate = new Date(mostRecentYear, mostRecentMonth, mostRecentDay)
+    let mostRecentYear, mostRecentMonth, mostRecentDay, mostRecentData, mostRecentDate
+    if (tracker) {
+        // Select the most recent [year][month][day] from the tracker
+        // Also select its data
+        mostRecentYear = Object.keys(tracker).sort().reverse()[0]
+        mostRecentMonth = Object.keys(tracker[mostRecentYear]).sort().reverse()[0]
+        mostRecentDay = Object.keys(tracker[mostRecentYear][mostRecentMonth]).sort().reverse()[0]
+        mostRecentData = tracker[mostRecentYear][mostRecentMonth][mostRecentDay]
+        mostRecentDate = new Date(mostRecentYear, mostRecentMonth, mostRecentDay)
+    }
 
 
     /* Each week from api looks like
@@ -160,7 +163,7 @@ try {
             let splitMonth = splitDate[1]
             let splitDay = splitDate[2]
             let currentDate = new Date(splitYear, splitMonth, splitDay)
-            if (currentDate < mostRecentDate) {
+            if (mostRecentDate && currentDate < mostRecentDate) {
                 // Skip days that are older than the most recent day in the tracker
                 return
             }
@@ -176,23 +179,23 @@ try {
             trackerFormattedFromAPI[splitYear][splitMonth][dayOfMonth][sourceUsername] = splitDay["contributionCount"]
         })
     })
+    if (tracker) {
+        // From trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername], get the number of contributions (if at all)
+        let mostRecentContributions = 0
+        if (trackerFormattedFromAPI[mostRecentYear] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername]) {
+            // if it does exist, get the number of contributions
+            mostRecentContributions = trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername]
+        }
 
-    // From trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername], get the number of contributions (if at all)
-    let mostRecentContributions = 0
-    if (trackerFormattedFromAPI[mostRecentYear] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername]) {
-        // if it does exist, get the number of contributions
-        mostRecentContributions = trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername]
+        // Minus the mostRecentData[sourceUsername] from the JSON file, if exists
+        let mostRecentDataFromTracker = 0
+        if (mostRecentData & mostRecentDate & mostRecentData[sourceUsername]) {
+            mostRecentDataFromTracker = mostRecentData[sourceUsername]
+        }
+
+        // Set the trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername] to the difference, if below 0, set to 0
+        trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername] = Math.max(0, mostRecentContributions - mostRecentDataFromTracker)
     }
-
-    // Minus the mostRecentData[sourceUsername] from the JSON file, if exists
-    let mostRecentDataFromTracker = 0
-    if (mostRecentData && mostRecentData[sourceUsername]) {
-        mostRecentDataFromTracker = mostRecentData[sourceUsername]
-    }
-
-    // Set the trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername] to the difference, if below 0, set to 0
-    trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername] = Math.max(0, mostRecentContributions - mostRecentDataFromTracker)
-
     // Now trackerFormattedFromAPI is what we have to process
     commitFromTrackerObject(trackerFormattedFromAPI)
 
@@ -200,33 +203,32 @@ try {
     // If there are any conflicts, merge the contributions
     // If there are no conflicts, add the new data
     // Then write to tracker.json
-    for (let year in trackerFormattedFromAPI) {
-        for (let month in trackerFormattedFromAPI[year]) {
-            for (let day in trackerFormattedFromAPI[year][month]) {
-                if (!tracker[year]) {
-                    tracker[year] = {}
+
+    if (tracker) {
+        for (let year in trackerFormattedFromAPI) {
+            for (let month in trackerFormattedFromAPI[year]) {
+                for (let day in trackerFormattedFromAPI[year][month]) {
+                    if (!tracker[year]) {
+                        tracker[year] = {}
+                    }
+                    if (!tracker[year][month]) {
+                        tracker[year][month] = {}
+                    }
+                    if (!tracker[year][month][day]) {
+                        tracker[year][month][day] = {}
+                    }
+                    if (!tracker[year][month][day][sourceUsername]) {
+                        tracker[year][month][day][sourceUsername] = 0
+                    }
+                    tracker[year][month][day][sourceUsername] += trackerFormattedFromAPI[year][month][day][sourceUsername]
                 }
-                if (!tracker[year][month]) {
-                    tracker[year][month] = {}
-                }
-                if (!tracker[year][month][day]) {
-                    tracker[year][month][day] = {}
-                }
-                if (!tracker[year][month][day][sourceUsername]) {
-                    tracker[year][month][day][sourceUsername] = 0
-                }
-                tracker[year][month][day][sourceUsername] += trackerFormattedFromAPI[year][month][day][sourceUsername]
             }
         }
+    } else {
+        tracker = trackerFormattedFromAPI
     }
 
     fs.writeFileSync('tracker.json', JSON.stringify(tracker, null, 2));
-
-
-
-
-
-
 
 
 
