@@ -32314,7 +32314,7 @@ try {
         }
 
         for (let i = 0; i < contributionsForTheDay; i++) {
-            exec.exec("git", ["commit", "-m='" + commitMessage + "'", "--allow-empty", "--author='" + authorString + "'"], options)
+            exec.exec("git", ["-c", "user.name=" + authorName, "-c", "user.email=" + authorEmail, "commit", "-m", commitMessage, "--allow-empty"], options)
         }
     }
 } catch (error) {
