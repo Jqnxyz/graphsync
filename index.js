@@ -265,7 +265,7 @@ try {
         return sortedTrackerObject;
     }
 
-    function commitFromTrackerObject(trackerObject) {
+    async function commitFromTrackerObject(trackerObject) {
         trackerObject = sortTrackerObject(trackerObject);
 
         /* For each day in trackerObject, call commit() with the date and number of contributions from sourceUsername */
@@ -278,7 +278,7 @@ try {
                         continue
                     }
                     console.log("Committing " + contributionsForTheDay + " contributions for " + year + "-" + month + "-" + day)
-                    commit(date, contributionsForTheDay)
+                    await commit(date, contributionsForTheDay)
                 }
             }
         }
@@ -292,7 +292,7 @@ try {
     }
 
 
-    function commit(date, contributionsForTheDay) {
+    async function commit(date, contributionsForTheDay) {
         let dateFormatted = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " 00:00:01 " + offsetHHMM
         let commitMessage = "Contribution sync from " + sourceUsername
         let options = {
@@ -305,12 +305,8 @@ try {
         }
 
         for (let i = 0; i < contributionsForTheDay; i++) {
-            exec.exec("git", ["-c", "user.name=" + authorName, "-c", "user.email=" + authorEmail, "commit", "-m", commitMessage, "--allow-empty"], options)
-            // Sleep for like 0.5s to not break things?
-            sleep(500)
+            await exec.exec("git", ["-c", "user.name=" + authorName, "-c", "user.email=" + authorEmail, "commit", "-m", commitMessage, "--allow-empty"], options)
         }
-        // Sleep for another 0.5s
-        sleep(500)
     }
 } catch (error) {
     core.setFailed(error.message);
