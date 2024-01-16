@@ -283,8 +283,8 @@ try {
 
         for (let i = 0; i < contributionsForTheDay; i++) {
             exec.exec("git", ["-c", "user.name=" + authorName, "-c", "user.email=" + authorEmail, "commit", "-m", commitMessage, "--allow-empty"], options)
-            // Sleep for like 50ms to not break things?
-            sleep(50)
+            // Sleep for like 0.5s to not break things?
+            sleep(500)
         }
     }
 } catch (error) {
