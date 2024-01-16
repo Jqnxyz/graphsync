@@ -1,11 +1,13 @@
 {
   "name": "graphsync",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "sync contribution graph from your work github account to your personal github account",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ncc build index.js --license licenses.txt"
+    "build": "ncc build index.js --license licenses.txt",
+    "release": "npm version patch && git push --follow-tags",
+    "build-release": "npm run build && git add . && git commit -S -m 'Build dist' && npm run release"
   },
   "keywords": [],
   "author": "",
