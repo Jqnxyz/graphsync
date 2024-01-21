@@ -26801,8 +26801,6 @@ async function main() {
 
         const contributionHistoryWeeks = await fetchContributionHistory(sourceUsername, sourceToken);
 
-        contributionHistoryWeeks = data["data"]["user"]["contributionsCollection"]["contributionCalendar"]["weeks"]
-
         console.log("Contribution history returned:", contributionHistoryWeeks)
 
         // Check tracker.json for progress
