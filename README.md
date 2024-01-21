@@ -17,6 +17,7 @@ Synchronise a GitHub account's contribution graph into your own. (Additive, not 
 ### Notes
 * `git-author-*` parameters must be of the destination contribution graph user.
 * `source-graph-token` should be stored in your repository's Actions's Secrets and accessed via `${{ secrets.SECRET_NAME }}`
+  * Your GitHub PAT should be created with `read:user` scope only. Create a new PAT [here](https://github.com/settings/tokens/new).
 
 ## Usage
 After the action runs, fake commits will have been created, and the tracker file will be created but not committed. Both are not pushed yet either.
