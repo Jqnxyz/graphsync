@@ -60,6 +60,8 @@ async function main() {
             console.log("No tracker.json found, starting from scratch");
         }
 
+        console.log("Tracker:", tracker)
+
         let mostRecentYear, mostRecentMonth, mostRecentDay, mostRecentData, mostRecentDate
         if (tracker) {
             // Select the most recent [year][month][day] from the tracker
@@ -124,17 +126,26 @@ async function main() {
          }
          */
         let trackerFormattedFromAPI = formatAPIContributionHistory(contributionHistoryWeeks, sourceUsername, mostRecentDate)
+        console.log("Tracker formatted from API:", trackerFormattedFromAPI)
         // Calculate the difference between the most recent data from the tracker and the most recent data from the API
         let processableHistory = getProcessableHistory(tracker, trackerFormattedFromAPI, sourceUsername, mostRecentDate, mostRecentData)
+        console.log("Processable history:", processableHistory)
         // Sort processableHistory by date, ascending year, month, day first:
         processableHistory = sortTrackerObject(processableHistory)
+        console.log("Processable history sorted:", processableHistory)
         // Commit from processableHistory
         commitFromTrackerObject(processableHistory, sourceUsername, authorName, authorEmail, offsetHHMM)
+
+        console.log("after commit")
 
         // Merge processableHistory with tracker
         // We don't use the tracker-formatted-from-api because it doesn't have the data from older days or other users
         tracker = mergeAPIHistoryWithTracker(tracker, processableHistory, sourceUsername)
+        console.log("Tracker merged:", tracker)
         fs.writeFileSync('tracker.json', JSON.stringify(tracker, null, 2));
+
+        console.log("after writeFileSync")
+
 
     } catch (error) {
         core.setFailed(error.message);
