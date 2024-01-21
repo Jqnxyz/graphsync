@@ -3,6 +3,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 name: 'GraphSync'
 description: 'Reads a contribution graph of an authenticated user, and copies the contributions to this repository'
+author: 'Zen Quah <me@zenquah.dev>'
 inputs:
   source-graph-username:
     description: 'Username of the source graph'
@@ -22,3 +23,6 @@ inputs:
 runs:
   using: 'node20'
   main: 'dist/index.js'
+branding:
+  icon: 'activity'
+  color: 'green'
