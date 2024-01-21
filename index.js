@@ -3,8 +3,8 @@ const github = require('@actions/github');
 const exec = require('@actions/exec');
 const fs = require('fs');
 const { fetchContributionHistory, formatAPIContributionHistory } = require('./history');
-const { getProcessableHistory, mergeAPIHistoryWithTracker } = require('./tracker');
-
+const { getProcessableHistory, mergeAPIHistoryWithTracker, sortTrackerObject } = require('./tracker');
+const { commitFromTrackerObject } = require('./commit');
 
 try {
 
@@ -129,70 +129,17 @@ try {
      */
     let trackerFormattedFromAPI = formatAPIContributionHistory(contributionHistoryWeeks, sourceUsername, mostRecentDate)
     // Calculate the difference between the most recent data from the tracker and the most recent data from the API
-    processableHistory = getProcessableHistory(tracker, trackerFormattedFromAPI, sourceUsername, mostRecentDate)
-    // Now processableHistory is what we have to process
-    commitFromTrackerObject(processableHistory)
+    let processableHistory = getProcessableHistory(tracker, trackerFormattedFromAPI, sourceUsername, mostRecentDate, mostRecentData)
+    // Sort processableHistory by date, ascending year, month, day first:
+    processableHistory = sortTrackerObject(processableHistory)
+    // Commit from processableHistory
+    commitFromTrackerObject(processableHistory, sourceUsername, authorName, authorEmail, offsetHHMM)
 
     // Merge processableHistory with tracker
     // We don't use the tracker-formatted-from-api because it doesn't have the data from older days or other users
     tracker = mergeAPIHistoryWithTracker(tracker, processableHistory, sourceUsername)
-
     fs.writeFileSync('tracker.json', JSON.stringify(tracker, null, 2));
 
-    // Sort tracker object by date, ascending year, month, day first:
-    function sortTrackerObject(trackerObject) {
-        const sortedTrackerObject = {};
-        const years = Object.keys(trackerObject).sort();
-        for (const year of years) {
-            const months = Object.keys(trackerObject[year]).sort();
-            sortedTrackerObject[year] = {};
-            for (const month of months) {
-                const days = Object.keys(trackerObject[year][month]).sort();
-                sortedTrackerObject[year][month] = {};
-                for (const day of days) {
-                    sortedTrackerObject[year][month][day] = trackerObject[year][month][day];
-                }
-            }
-        }
-        return sortedTrackerObject;
-    }
-
-    async function commitFromTrackerObject(trackerObject) {
-        trackerObject = sortTrackerObject(trackerObject);
-
-        /* For each day in trackerObject, call commit() with the date and number of contributions from sourceUsername */
-        for (let year in trackerObject) {
-            for (let month in trackerObject[year]) {
-                for (let day in trackerObject[year][month]) {
-                    let dateString = year + "-" + month + "-" + day
-                    let contributionsForTheDay = trackerObject[year][month][day][sourceUsername]
-                    if (contributionsForTheDay == 0) {
-                        continue
-                    }
-                    console.log("Committing " + contributionsForTheDay + " contributions for " + year + "-" + month + "-" + day)
-                    await commit(dateString, contributionsForTheDay)
-                }
-            }
-        }
-    }
-
-
-    async function commit(dateString, contributionsForTheDay) {
-        let dateFormatted = dateString + " 00:00:01 " + offsetHHMM
-        let commitMessage = "Contribution sync from " + sourceUsername
-        let options = {
-            env: {
-                GIT_AUTHOR_DATE: dateFormatted,
-                GIT_COMMITTER_DATE: dateFormatted,
-                GIT_AUTHOR_NAME: authorName,
-                GIT_AUTHOR_EMAIL: authorEmail,
-            }
-        }
-
-        for (let i = 0; i < contributionsForTheDay; i++) {
-            await exec.exec("git", ["-c", "user.name=" + authorName, "-c", "user.email=" + authorEmail, "commit", "-m", commitMessage, "--allow-empty"], options)
-        }
-    }
 } catch (error) {
     core.setFailed(error.message);
 }
