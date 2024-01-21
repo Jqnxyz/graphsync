@@ -1,5 +1,9 @@
 # GraphSync
+![GitHub Tag](https://img.shields.io/github/v/tag/Jqnxyz/graphsync?label=Latest%20version)
+![GitHub License](https://img.shields.io/github/license/Jqnxyz/graphsync)
+
 Synchronise a GitHub account's contribution graph into your own. (Additive, not replacement)
+
 
 ## Inputs
 | Parameter               | Description                                                  |
