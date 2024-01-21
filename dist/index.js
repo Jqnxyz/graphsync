@@ -26801,8 +26801,6 @@ async function main() {
 
         const contributionHistoryWeeks = await fetchContributionHistory(sourceUsername, sourceToken);
 
-        console.log("Contribution history returned:", contributionHistoryWeeks)
-
         // Check tracker.json for progress
         // If it doesn't exist, return empty object
 
@@ -26843,7 +26841,7 @@ async function main() {
             console.log("No tracker.json found, starting from scratch");
         }
 
-        console.log("Tracker:", tracker)
+        console.log("Tracker successfully loaded")
 
         let mostRecentYear, mostRecentMonth, mostRecentDay, mostRecentData, mostRecentDate
         if (tracker) {
@@ -26909,9 +26907,9 @@ async function main() {
          }
          */
         let trackerFormattedFromAPI = formatAPIContributionHistory(contributionHistoryWeeks, sourceUsername, mostRecentDate)
-        console.log("Tracker formatted from API:", trackerFormattedFromAPI)
+        console.log("APU history successfully formatted")
         // Calculate the difference between the most recent data from the tracker and the most recent data from the API
-        let processableHistory = getProcessableHistory(tracker, trackerFormattedFromAPI, sourceUsername, mostRecentDate, mostRecentData)
+        let processableHistory = getProcessableHistory(tracker, trackerFormattedFromAPI, sourceUsername, mostRecentYear, mostRecentMonth, mostRecentDay, mostRecentData)
         console.log("Processable history:", processableHistory)
         // Sort processableHistory by date, ascending year, month, day first:
         processableHistory = sortTrackerObject(processableHistory)
