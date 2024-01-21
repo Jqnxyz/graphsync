@@ -12,8 +12,8 @@
     "build-release-minor": "npm run build && git add . && git commit -S -m 'Build dist' && npm run release-minor"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Zen Quah <me@zenquah.dev>",
+  "license": "MPL-2.0",
   "dependencies": {
     "@actions/core": "^1.10.1",
     "@actions/exec": "^1.1.1",
