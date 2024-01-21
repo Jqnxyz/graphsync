@@ -64,9 +64,9 @@ async function main() {
         if (tracker) {
             // Select the most recent [year][month][day] from the tracker
             // Also select its data
-            mostRecentYear = Object.keys(tracker).sort().reverse()[0]
-            mostRecentMonth = Object.keys(tracker[mostRecentYear]).sort().reverse()[0]
-            mostRecentDay = Object.keys(tracker[mostRecentYear][mostRecentMonth]).sort().reverse()[0]
+            mostRecentYear = Object.keys(tracker).sort((a, b) => b - a)[0];
+            mostRecentMonth = Object.keys(tracker[mostRecentYear]).sort((a, b) => b - a)[0];
+            mostRecentDay = Object.keys(tracker[mostRecentYear][mostRecentMonth]).sort((a, b) => b - a)[0];
             mostRecentData = tracker[mostRecentYear][mostRecentMonth][mostRecentDay]
             mostRecentDate = new Date(mostRecentYear, mostRecentMonth, mostRecentDay)
         }
