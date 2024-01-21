@@ -26847,9 +26847,9 @@ async function main() {
         if (tracker) {
             // Select the most recent [year][month][day] from the tracker
             // Also select its data
-            mostRecentYear = Object.keys(tracker).sort().reverse()[0]
-            mostRecentMonth = Object.keys(tracker[mostRecentYear]).sort().reverse()[0]
-            mostRecentDay = Object.keys(tracker[mostRecentYear][mostRecentMonth]).sort().reverse()[0]
+            mostRecentYear = Object.keys(tracker).sort((a, b) => b - a)[0];
+            mostRecentMonth = Object.keys(tracker[mostRecentYear]).sort((a, b) => b - a)[0];
+            mostRecentDay = Object.keys(tracker[mostRecentYear][mostRecentMonth]).sort((a, b) => b - a)[0];
             mostRecentData = tracker[mostRecentYear][mostRecentMonth][mostRecentDay]
             mostRecentDate = new Date(mostRecentYear, mostRecentMonth, mostRecentDay)
         }
@@ -26910,22 +26910,20 @@ async function main() {
         console.log("APU history successfully formatted")
         // Calculate the difference between the most recent data from the tracker and the most recent data from the API
         let processableHistory = getProcessableHistory(tracker, trackerFormattedFromAPI, sourceUsername, mostRecentYear, mostRecentMonth, mostRecentDay, mostRecentData)
-        console.log("Processable history:", processableHistory)
+        console.log("Processable history calculated")
         // Sort processableHistory by date, ascending year, month, day first:
         processableHistory = sortTrackerObject(processableHistory)
-        console.log("Processable history sorted:", processableHistory)
+        console.log("Processable history sorted")
         // Commit from processableHistory
         commitFromTrackerObject(processableHistory, sourceUsername, authorName, authorEmail, offsetHHMM)
-
-        console.log("after commit")
+        console.log("Processable history committed")
 
         // Merge processableHistory with tracker
         // We don't use the tracker-formatted-from-api because it doesn't have the data from older days or other users
         tracker = mergeAPIHistoryWithTracker(tracker, processableHistory, sourceUsername)
-        console.log("Tracker merged:", tracker)
+        console.log("Tracker merged")
         fs.writeFileSync('tracker.json', JSON.stringify(tracker, null, 2));
-
-        console.log("after writeFileSync")
+        console.log("Tracker successfully saved")
 
 
     } catch (error) {
