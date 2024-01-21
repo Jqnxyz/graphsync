@@ -19,6 +19,11 @@ Synchronise a GitHub account's contribution graph into your own. (Additive, not 
 * `source-graph-token` should be stored in your repository's Actions's Secrets and accessed via `${{ secrets.SECRET_NAME }}`
   * Your GitHub PAT should be created with `read:user` scope only. Create a new PAT [here](https://github.com/settings/tokens/new).
 
+## Template
+You can use the `graphsync-template` repository to easily set up a repository with the required workflow. Make sure to update the `action.yml` file with your own parameters, and to use the latest version of this action.
+
+[![Use this template](https://img.shields.io/badge/Use%20this%20template-2ea44f?style=for-the-badge&logo=github)](https://github.com/Jqnxyz/graphsync-template/generate)
+
 ## Usage
 After the action runs, fake commits will have been created, and the tracker file will be created but not committed. Both are not pushed yet either.
 You **must** use another action to commit the changed tracker file, and push all changes to the repo. I recommend `stefanzweifel/git-auto-commit-action@v5`
@@ -66,6 +71,7 @@ jobs:
           commit_user_name: "Zen Quah"
           commit_author: "Zen Quah Bot <bot@zenquah.dev>" # Use a different author than the owner to avoid contributing to the owner's commit count
 ```
+
 ## Licensing
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
