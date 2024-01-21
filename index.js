@@ -2,7 +2,8 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const exec = require('@actions/exec');
 const fs = require('fs');
-const { fetchContributionHistory } = require('./history');
+const { fetchContributionHistory, formatAPIContributionHistory } = require('./history');
+const { getProcessableHistory, mergeAPIHistoryWithTracker } = require('./tracker');
 
 
 try {
@@ -126,87 +127,17 @@ try {
          }
      }
      */
-    let trackerFormattedFromAPI = {}
-    contributionHistoryWeeks.forEach(week => {
-        week["contributionDays"].forEach(day => {
-            let splitDate = day["date"].split("-")
-            let splitYear = splitDate[0]
-            let splitMonth = splitDate[1]
-            let splitDay = splitDate[2]
-            let currentDate = new Date(splitYear, splitMonth, splitDay)
-            if (mostRecentDate && currentDate < mostRecentDate) {
-                // Skip days that are older than the most recent day in the tracker
-                return
-            }
-            if (!trackerFormattedFromAPI[splitYear]) {
-                trackerFormattedFromAPI[splitYear] = {}
-            }
-            if (!trackerFormattedFromAPI[splitYear][splitMonth]) {
-                trackerFormattedFromAPI[splitYear][splitMonth] = {}
-            }
-            if (!trackerFormattedFromAPI[splitYear][splitMonth][splitDay]) {
-                trackerFormattedFromAPI[splitYear][splitMonth][splitDay] = {}
-            }
-            trackerFormattedFromAPI[splitYear][splitMonth][splitDay][sourceUsername] = day["contributionCount"]
-        })
-    })
-    if (tracker) {
+    let trackerFormattedFromAPI = formatAPIContributionHistory(contributionHistoryWeeks, sourceUsername, mostRecentDate)
+    // Calculate the difference between the most recent data from the tracker and the most recent data from the API
+    processableHistory = getProcessableHistory(tracker, trackerFormattedFromAPI, sourceUsername, mostRecentDate)
+    // Now processableHistory is what we have to process
+    commitFromTrackerObject(processableHistory)
 
-        // From trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername], get the number of contributions (if at all)
-        let mostRecentContributions = 0
-        if (trackerFormattedFromAPI[mostRecentYear] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay] && trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername]) {
-            // if it does exist, get the number of contributions
-            mostRecentContributions = trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername]
-        }
-
-        // Minus the mostRecentData[sourceUsername] from the JSON file, if exists
-        let mostRecentDataFromTracker = 0
-        if (mostRecentData && mostRecentData[sourceUsername]) {
-            mostRecentDataFromTracker = mostRecentData[sourceUsername]
-        }
-
-        // Set the trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername] to the difference, if below 0, set to 0
-        trackerFormattedFromAPI[mostRecentYear][mostRecentMonth][mostRecentDay][sourceUsername] = Math.max(0, mostRecentContributions - mostRecentDataFromTracker)
-    }
-    // Now trackerFormattedFromAPI is what we have to process
-    commitFromTrackerObject(trackerFormattedFromAPI)
-
-    // Merge trackerFormattedFromAPI with tracker
-    // If there are any conflicts, merge the contributions
-    // If there are no conflicts, add the new data
-    // Then write to tracker.json
-    if (tracker) {
-
-        for (let year in trackerFormattedFromAPI) {
-            for (let month in trackerFormattedFromAPI[year]) {
-                for (let day in trackerFormattedFromAPI[year][month]) {
-                    if (!tracker[year]) {
-                        tracker[year] = {}
-                    }
-                    if (!tracker[year][month]) {
-                        tracker[year][month] = {}
-                    }
-                    if (!tracker[year][month][day]) {
-                        tracker[year][month][day] = {}
-                    }
-                    if (!tracker[year][month][day][sourceUsername]) {
-                        tracker[year][month][day][sourceUsername] = 0
-                    }
-                    tracker[year][month][day][sourceUsername] += trackerFormattedFromAPI[year][month][day][sourceUsername]
-                }
-            }
-        }
-    } else {
-        tracker = trackerFormattedFromAPI
-    }
+    // Merge processableHistory with tracker
+    // We don't use the tracker-formatted-from-api because it doesn't have the data from older days or other users
+    tracker = mergeAPIHistoryWithTracker(tracker, processableHistory, sourceUsername)
 
     fs.writeFileSync('tracker.json', JSON.stringify(tracker, null, 2));
-
-    // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2)
-    console.log(`The event payload: ${payload}`);
-
-
 
     // Sort tracker object by date, ascending year, month, day first:
     function sortTrackerObject(trackerObject) {

@@ -38,4 +38,34 @@ const fetchContributionHistory = async (sourceUsername, sourceToken) => {
     }
 };
 
-module.exports = { fetchContributionHistory };
+
+const formatAPIContributionHistory = (contributionHistoryWeeks, sourceUsername, mostRecentDate) => {
+    let trackerFormattedFromAPI = {}
+    contributionHistoryWeeks.forEach(week => {
+        week["contributionDays"].forEach(day => {
+            let splitDate = day["date"].split("-")
+            let splitYear = splitDate[0]
+            let splitMonth = splitDate[1]
+            let splitDay = splitDate[2]
+            let currentDate = new Date(splitYear, splitMonth, splitDay)
+            if (mostRecentDate && currentDate < mostRecentDate) {
+                // Skip days that are older than the most recent day in the tracker
+                return
+            }
+            if (!trackerFormattedFromAPI[splitYear]) {
+                trackerFormattedFromAPI[splitYear] = {}
+            }
+            if (!trackerFormattedFromAPI[splitYear][splitMonth]) {
+                trackerFormattedFromAPI[splitYear][splitMonth] = {}
+            }
+            if (!trackerFormattedFromAPI[splitYear][splitMonth][splitDay]) {
+                trackerFormattedFromAPI[splitYear][splitMonth][splitDay] = {}
+            }
+            trackerFormattedFromAPI[splitYear][splitMonth][splitDay][sourceUsername] = day["contributionCount"]
+        })
+    })
+    return trackerFormattedFromAPI
+}
+
+
+module.exports = { fetchContributionHistory, formatAPIContributionHistory };
