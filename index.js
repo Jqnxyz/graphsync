@@ -1,13 +1,10 @@
 const core = require('@actions/core');
-const github = require('@actions/github');
-const exec = require('@actions/exec');
 const fs = require('fs');
 const { fetchContributionHistory, formatAPIContributionHistory } = require('./history');
 const { getProcessableHistory, mergeAPIHistoryWithTracker, sortTrackerObject } = require('./tracker');
 const { commitFromTrackerObject } = require('./commit');
 
 try {
-
     // Load the inputs
     const sourceUsername = core.getInput('source-graph-username');
     const sourceToken = core.getInput('source-graph-token');
