@@ -25,7 +25,9 @@ You can use the `graphsync-template` repository to easily set up a repository wi
 [![Use this template](https://img.shields.io/badge/Use%20this%20template-2ea44f?style=for-the-badge&logo=github)](https://github.com/Jqnxyz/graphsync-template/generate)
 
 ## Usage
-After the action runs, fake commits will have been created, and the tracker file will be created but not committed. Both are not pushed yet either.
+This action is meant to run in a dedicated empty repository. You should create a private repository in order to hide the source of the generated commits, and enable displaying private repository commits on your contribution graph.
+
+When the action runs, fake commits will have been created, and the tracker file will be created but not committed. Both are not pushed yet either.
 You **must** use another action to commit the changed tracker file, and push all changes to the repo. I recommend `stefanzweifel/git-auto-commit-action@v5`
 
 > [!IMPORTANT]  
