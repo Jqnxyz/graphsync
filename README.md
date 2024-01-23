@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v4
       # Run this action
       - name: GraphSync
-        uses: Jqnxyz/graphsync@v1.1.0
+        uses: Jqnxyz/graphsync@v1.2.0
         with:
           source-graph-username: 'Jqnxyz'
           source-graph-token: ${{ secrets.GRAPHSYNC_TOKEN }}
