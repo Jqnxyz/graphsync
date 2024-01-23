@@ -3,6 +3,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
+const exec = require('@actions/exec');
+
 const commitFromTrackerObject = async (trackerObject, sourceUsername, authorName, authorEmail, offsetHHMM) => {
     /* For each day in trackerObject, call commit() with the date and number of contributions from sourceUsername */
     for (let year in trackerObject) {
