@@ -2,7 +2,7 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/Jqnxyz/graphsync?label=Latest%20version)
 ![GitHub License](https://img.shields.io/github/license/Jqnxyz/graphsync)
 
-Synchronise a GitHub account's contribution graph into your own. (Additive, not replacement)
+Synchronise a GitHub account's contribution graph into your own.
 
 
 ## Inputs
@@ -27,9 +27,9 @@ You can use the `graphsync-template` repository to easily set up a repository wi
 ## Usage
 This action is meant to run in a dedicated empty repository. You should create a private repository in order to hide the source of the generated commits, and enable displaying private repository commits on your contribution graph.
 
-When the action runs, fake commits will have been created, and the tracker file will be created but not committed. Both are not pushed yet either.
+When the action runs, empty commits will have been created, and the tracker file will be created but not committed. Both are not pushed yet either.
 You **must** use another action to commit the changed tracker file, and push all changes to the repo. I recommend `stefanzweifel/git-auto-commit-action@v5`
-
+(just use the template repo, really.)
 > [!IMPORTANT]  
 > You must enable *write* permissions for Actions in your GitHub repository settings in order to commit the changes.
 
